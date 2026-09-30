@@ -24,12 +24,14 @@ Run:
   python main.py                 # -> http://localhost:8080
 """
 
+import asyncio
 import os
 import re
 import uuid
 
 import google.auth
 import google.auth.transport.requests
+from google.cloud import firestore
 import httpx
 from a2a.client import ClientConfig, ClientFactory
 from a2a.types import (
@@ -187,6 +189,203 @@ def _redact_secrets(obj: any) -> any:
     return obj
 
 
+_firestore_client = None
+
+
+def _get_db():
+    global _firestore_client
+    if _firestore_client is None:
+        project_id = os.environ.get("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-03-c0fc118b7249")
+        _firestore_client = firestore.Client(project=project_id)
+    return _firestore_client
+
+
+@app.get("/api/stats")
+async def get_stats(user_id: str = "web-user"):
+    try:
+        db = _get_db()
+        doc = db.collection("nightscout_profiles").document(user_id).get()
+        if not doc.exists:
+            return JSONResponse({"status": "error", "message": f"No Nightscout profile found for {user_id}"})
+        profile = doc.to_dict() or {}
+        url = profile.get("nightscout_url", "").rstrip("/")
+        token = profile.get("access_token", "")
+        if not url:
+            return JSONResponse({"status": "error", "message": "Nightscout URL not configured in profile"})
+
+        target_low = float(profile.get("target_low", 70))
+        target_high = float(profile.get("target_high", 180))
+
+        entries_url = f"{url}/api/v1/entries.json?count=24"
+        treatments_url = f"{url}/api/v1/treatments.json?count=30"
+        if token:
+            entries_url += f"&token={token}"
+            treatments_url += f"&token={token}"
+
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            resps = await asyncio.gather(
+                client.get(entries_url),
+                client.get(treatments_url),
+                return_exceptions=True,
+            )
+
+        entries_resp, treats_resp = resps[0], resps[1]
+        entries_data = (
+            entries_resp.json()
+            if not isinstance(entries_resp, Exception) and getattr(entries_resp, "status_code", 0) == 200
+            else []
+        )
+        treats_data = (
+            treats_resp.json()
+            if not isinstance(treats_resp, Exception) and getattr(treats_resp, "status_code", 0) == 200
+            else []
+        )
+
+        valid_entries = [e for e in entries_data if isinstance(e.get("sgv"), (int, float))]
+        arrow_map = {
+            "DoubleUp": "⇈",
+            "SingleUp": "↑",
+            "FortyFiveUp": "↗",
+            "Flat": "→",
+            "FortyFiveDown": "↘",
+            "SingleDown": "↓",
+            "DoubleDown": "⇊",
+        }
+
+        cgm_info = {
+            "sgv": "--",
+            "direction": "None",
+            "arrow": "--",
+            "delta": "0",
+            "time": "--:-- UTC",
+            "status_color": "normal",
+        }
+        analytics_info = {
+            "avg": "--",
+            "min": "--",
+            "max": "--",
+            "tir_pct": 0,
+            "above_pct": 0,
+            "below_pct": 0,
+            "target_low": int(target_low),
+            "target_high": int(target_high),
+            "readings_count": 0,
+        }
+        timeline = []
+
+        if valid_entries:
+            latest = valid_entries[0]
+            latest_sgv = int(latest["sgv"])
+            latest_dir = latest.get("direction", "Flat")
+            arrow = arrow_map.get(latest_dir, "→")
+            latest_time = latest.get("dateString", "")
+            t_fmt = latest_time[11:16] + " UTC" if len(latest_time) >= 16 else latest_time
+
+            delta_val = 0
+            delta_str = "0"
+            if len(valid_entries) >= 2:
+                prev_sgv = int(valid_entries[1]["sgv"])
+                delta_val = latest_sgv - prev_sgv
+                delta_str = f"+{delta_val}" if delta_val > 0 else str(delta_val)
+
+            status_color = "normal"
+            if latest_sgv < target_low:
+                status_color = "danger" if latest_sgv < 55 else "warning"
+            elif latest_sgv > target_high:
+                status_color = "danger" if latest_sgv > 250 else "warning"
+
+            cgm_info = {
+                "sgv": latest_sgv,
+                "direction": latest_dir,
+                "arrow": arrow,
+                "delta": delta_str,
+                "time": t_fmt,
+                "status_color": status_color,
+            }
+
+            all_sgvs = [int(e["sgv"]) for e in valid_entries]
+            avg_sgv = round(sum(all_sgvs) / len(all_sgvs))
+            min_sgv = min(all_sgvs)
+            max_sgv = max(all_sgvs)
+            in_range = sum(1 for s in all_sgvs if target_low <= s <= target_high)
+            tir_pct = round((in_range / len(all_sgvs)) * 100)
+            above_pct = round((sum(1 for s in all_sgvs if s > target_high) / len(all_sgvs)) * 100)
+            below_pct = round((sum(1 for s in all_sgvs if s < target_low) / len(all_sgvs)) * 100)
+
+            analytics_info = {
+                "avg": avg_sgv,
+                "min": min_sgv,
+                "max": max_sgv,
+                "tir_pct": tir_pct,
+                "above_pct": above_pct,
+                "below_pct": below_pct,
+                "target_low": int(target_low),
+                "target_high": int(target_high),
+                "readings_count": len(all_sgvs),
+            }
+
+            for e in valid_entries[:12]:
+                dt = e.get("dateString", "")
+                d_fmt = dt[11:16] if len(dt) >= 16 else dt
+                d_dir = e.get("direction", "Flat")
+                timeline.append({
+                    "time": d_fmt,
+                    "sgv": int(e["sgv"]),
+                    "direction": d_dir,
+                    "arrow": arrow_map.get(d_dir, "→"),
+                })
+
+        total_bolus = 0.0
+        total_carbs = 0.0
+        basal_rate = 0.40
+        recent_treatments = []
+
+        for t in treats_data:
+            ins = t.get("insulin")
+            if ins is not None and isinstance(ins, (int, float)):
+                total_bolus += float(ins)
+            crb = t.get("carbs")
+            if crb is not None and isinstance(crb, (int, float)):
+                total_carbs += float(crb)
+            if "rate" in t and isinstance(t["rate"], (int, float)):
+                basal_rate = float(t["rate"])
+            elif "absolute" in t and isinstance(t["absolute"], (int, float)):
+                basal_rate = float(t["absolute"])
+
+            t_type = t.get("eventType", "Treatment")
+            created_at = t.get("created_at", "")
+            time_sub = created_at[11:16] if len(created_at) >= 16 else created_at
+            if (ins and ins > 0) or (crb and crb > 0):
+                desc = []
+                if ins:
+                    desc.append(f"{ins:.1f} U")
+                if crb:
+                    desc.append(f"{int(crb)}g carbs")
+                if len(recent_treatments) < 6:
+                    recent_treatments.append({
+                        "time": time_sub,
+                        "type": t_type,
+                        "summary": " • ".join(desc),
+                    })
+
+        payload = {
+            "status": "ok",
+            "nightscout_url": url,
+            "cgm": cgm_info,
+            "analytics": analytics_info,
+            "treatments": {
+                "total_bolus": round(total_bolus, 1),
+                "basal_rate": basal_rate,
+                "total_carbs": int(total_carbs),
+            },
+            "timeline": timeline,
+            "recent_treatments": recent_treatments,
+        }
+        return JSONResponse(_redact_secrets(payload))
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)})
+
+
 @app.post("/chat")
 async def chat(req: Request):
     body = await req.json()
@@ -207,10 +406,14 @@ async def chat(req: Request):
         )
         a2a_client = factory.create(card)
 
+        formatted_message = message
+        if user_id and f"[User: {user_id}]" not in message:
+            formatted_message = f"[User: {user_id}] {message}"
+
         msg = Message(
             message_id=str(uuid.uuid4()),
             role=Role.user,
-            parts=[Part(root=TextPart(text=message))],
+            parts=[Part(root=TextPart(text=formatted_message))],
             context_id=_contexts.get(user_id),
         )
 
