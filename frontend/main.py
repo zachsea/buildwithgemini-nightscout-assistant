@@ -216,13 +216,13 @@ async def get_stats(user_id: str = "web-user"):
         target_low = float(profile.get("target_low", 70))
         target_high = float(profile.get("target_high", 180))
 
-        entries_url = f"{url}/api/v1/entries.json?count=24"
-        treatments_url = f"{url}/api/v1/treatments.json?count=30"
+        entries_url = f"{url}/api/v1/entries.json?count=288"
+        treatments_url = f"{url}/api/v1/treatments.json?count=100"
         if token:
             entries_url += f"&token={token}"
             treatments_url += f"&token={token}"
 
-        async with httpx.AsyncClient(timeout=8.0) as client:
+        async with httpx.AsyncClient(timeout=10.0) as client:
             resps = await asyncio.gather(
                 client.get(entries_url),
                 client.get(treatments_url),
@@ -272,6 +272,7 @@ async def get_stats(user_id: str = "web-user"):
             "readings_count": 0,
         }
         timeline = []
+        graph_points = []
 
         if valid_entries:
             latest = valid_entries[0]
@@ -324,6 +325,7 @@ async def get_stats(user_id: str = "web-user"):
                 "readings_count": len(all_sgvs),
             }
 
+            # Recent 12 readings for timeline pill stream
             for e in valid_entries[:12]:
                 dt = e.get("dateString", "")
                 d_fmt = dt[11:16] if len(dt) >= 16 else dt
@@ -335,53 +337,100 @@ async def get_stats(user_id: str = "web-user"):
                     "arrow": arrow_map.get(d_dir, "→"),
                 })
 
+            # Chronological (oldest to newest) 24h graph points
+            for e in reversed(valid_entries):
+                sgv_pt = int(e["sgv"])
+                dt = e.get("dateString", "")
+                pt_time = dt[11:16] if len(dt) >= 16 else dt
+                pt_dir = e.get("direction", "Flat")
+                pt_color = "normal"
+                if sgv_pt < target_low:
+                    pt_color = "danger" if sgv_pt < 55 else "warning"
+                elif sgv_pt > target_high:
+                    pt_color = "danger" if sgv_pt > 250 else "warning"
+                graph_points.append({
+                    "time": pt_time,
+                    "sgv": sgv_pt,
+                    "direction": pt_dir,
+                    "arrow": arrow_map.get(pt_dir, "→"),
+                    "color": pt_color,
+                    "dateString": dt,
+                })
+
         total_bolus = 0.0
         total_carbs = 0.0
         basal_rate = 0.40
+        doses_24h = []
         recent_treatments = []
 
         for t in treats_data:
             ins = t.get("insulin")
-            if ins is not None and isinstance(ins, (int, float)):
-                total_bolus += float(ins)
             crb = t.get("carbs")
-            if crb is not None and isinstance(crb, (int, float)):
-                total_carbs += float(crb)
+            t_type = t.get("eventType", "Treatment")
+            created_at = t.get("created_at") or t.get("timestamp") or ""
+            time_sub = created_at[11:16] if len(created_at) >= 16 else created_at
+            notes = t.get("notes") or t.get("reason") or ""
+
             if "rate" in t and isinstance(t["rate"], (int, float)):
                 basal_rate = float(t["rate"])
             elif "absolute" in t and isinstance(t["absolute"], (int, float)):
                 basal_rate = float(t["absolute"])
 
-            t_type = t.get("eventType", "Treatment")
-            created_at = t.get("created_at", "")
-            time_sub = created_at[11:16] if len(created_at) >= 16 else created_at
-            if (ins and ins > 0) or (crb and crb > 0):
+            ins_val = float(ins) if ins is not None and isinstance(ins, (int, float)) and ins > 0 else 0.0
+            crb_val = float(crb) if crb is not None and isinstance(crb, (int, float)) and crb > 0 else 0.0
+
+            if ins_val > 0 or crb_val > 0:
+                total_bolus += ins_val
+                total_carbs += crb_val
                 desc = []
-                if ins:
-                    desc.append(f"{ins:.1f} U")
-                if crb:
-                    desc.append(f"{int(crb)}g carbs")
+                if ins_val > 0:
+                    desc.append(f"{ins_val:.2f} U" if (ins_val * 100) % 10 else f"{ins_val:.1f} U")
+                if crb_val > 0:
+                    desc.append(f"{int(crb_val)}g carbs")
+
+                dose_item = {
+                    "time": time_sub,
+                    "created_at": created_at,
+                    "type": t_type,
+                    "insulin": round(ins_val, 2),
+                    "carbs": round(crb_val, 1),
+                    "notes": notes,
+                    "summary": " • ".join(desc),
+                }
+                doses_24h.append(dose_item)
                 if len(recent_treatments) < 6:
-                    recent_treatments.append({
-                        "time": time_sub,
-                        "type": t_type,
-                        "summary": " • ".join(desc),
-                    })
+                    recent_treatments.append(dose_item)
+
+        est_basal = round(basal_rate * 24, 2)
+        total_daily_dose = round(total_bolus + est_basal, 2)
+
+        treatments_summary_24h = {
+            "total_bolus": round(total_bolus, 2),
+            "total_carbs": round(total_carbs, 1),
+            "basal_rate": basal_rate,
+            "est_basal_24h": est_basal,
+            "tdd": total_daily_dose,
+            "doses": doses_24h,
+            "dose_count": len(doses_24h),
+        }
 
         payload = {
             "status": "ok",
             "nightscout_url": url,
             "cgm": cgm_info,
             "analytics": analytics_info,
+            "graph_24h": graph_points,
+            "treatments_24h": treatments_summary_24h,
             "treatments": {
-                "total_bolus": round(total_bolus, 1),
+                "total_bolus": round(total_bolus, 2),
                 "basal_rate": basal_rate,
-                "total_carbs": int(total_carbs),
+                "total_carbs": round(total_carbs, 1),
             },
             "timeline": timeline,
             "recent_treatments": recent_treatments,
         }
         return JSONResponse(_redact_secrets(payload))
+
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)})
 

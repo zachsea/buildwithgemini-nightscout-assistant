@@ -101,7 +101,7 @@ def fetch_glucose_trends(user_id: str, count: int = 24) -> str:
 
     Args:
         user_id: The ID of the user.
-        count: The number of sensor readings to retrieve (default: 24, corresponding to ~2 hours).
+        count: The number of sensor readings to retrieve (default: 24 for ~2 hours; pass 288 for full 24-hour analysis).
 
     Returns:
         A structured statistical summary of glucose readings, trends, min/max, time-in-range,
@@ -203,7 +203,7 @@ def fetch_recent_treatments(user_id: str, count: int = 50) -> str:
 
     Args:
         user_id: The ID of the user.
-        count: The number of recent treatment records to retrieve (default: 50).
+        count: The number of recent treatment records to retrieve (default: 50; pass 100 for 24-hour analysis).
 
     Returns:
         A summary of recent boluses, basals, and carbs, or an error message.

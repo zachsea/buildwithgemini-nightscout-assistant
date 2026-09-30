@@ -385,6 +385,268 @@
     color: var(--accent);
   }
 
+  /* Tabs Navigation Bar */
+  .dashboard-tabs {
+    display: flex;
+    gap: .5rem;
+    border-bottom: 2px solid var(--border);
+    margin-top: .25rem;
+    padding-bottom: 0;
+  }
+  .dash-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    padding: .7rem 1.15rem;
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    transition: all .15s ease;
+  }
+  .dash-tab:hover {
+    color: var(--text-main);
+  }
+  .dash-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-pane {
+    display: none;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .tab-pane.active {
+    display: flex;
+  }
+
+  /* 24h Glucose Graph Styles */
+  .graph-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.4rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    position: relative;
+  }
+  .graph-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 1rem;
+    padding-bottom: .6rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .graph-title {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .graph-legend {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    font-size: .78rem;
+    color: var(--text-muted);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+  }
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .legend-dot.target { background: #10b981; }
+  .legend-dot.high { background: #f59e0b; }
+  .legend-dot.low { background: #ef4444; }
+
+  .graph-container {
+    position: relative;
+    width: 100%;
+    height: 290px;
+    background: #fafcfc;
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .glucose-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: crosshair;
+  }
+  .graph-tooltip {
+    position: absolute;
+    display: none;
+    pointer-events: none;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(4px);
+    color: #ffffff;
+    padding: .45rem .75rem;
+    border-radius: 8px;
+    font-size: .78rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10;
+    transform: translate(-50%, -120%);
+    white-space: nowrap;
+  }
+  .graph-tooltip-time {
+    font-size: .72rem;
+    color: #94a3b8;
+    margin-bottom: 2px;
+  }
+  .graph-tooltip-val {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+  .graph-tooltip-status {
+    font-size: .72rem;
+    font-weight: 500;
+  }
+
+  .graph-metrics-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: .85rem;
+    margin-top: 1rem;
+  }
+  .mini-stat-card {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .75rem .95rem;
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+  }
+  .mini-stat-label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+  .mini-stat-val {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+  .mini-stat-sub {
+    font-size: .72rem;
+    color: var(--text-light);
+  }
+
+  /* 24h Insulin Tab Styles */
+  .insulin-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: .85rem;
+  }
+  .insulin-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+  }
+  .insulin-card-label {
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .insulin-card-val {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+  .insulin-card-sub {
+    font-size: .75rem;
+    color: var(--text-light);
+  }
+
+  .doses-table-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.4rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .doses-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+  }
+  .doses-table th {
+    text-align: left;
+    padding: .65rem .75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    font-size: .76rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+  }
+  .doses-table td {
+    padding: .75rem;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    vertical-align: middle;
+  }
+  .doses-table tr:last-child td {
+    border-bottom: none;
+  }
+  .dose-pill {
+    display: inline-block;
+    padding: .25rem .55rem;
+    background: var(--accent-light);
+    color: var(--accent-hover);
+    border: 1px solid var(--accent-border);
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: .85rem;
+  }
+  .dose-carb-pill {
+    display: inline-block;
+    padding: .25rem .55rem;
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: .8rem;
+  }
+  .ask-dose-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: .25rem .55rem;
+    font-size: .75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .ask-dose-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+
   /* Quick Prompts Bar */
   .quick-ask-banner {
     background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
@@ -429,6 +691,7 @@
     transform: translateY(-1px);
     box-shadow: 0 2px 5px rgba(13, 148, 136, 0.2);
   }
+
 
   /* --- Agent Pane Styles --- */
   .agent-header {
@@ -746,11 +1009,11 @@
         </div>
       </div>
 
-      <!-- 3. 2-Hour Window Analytics -->
+      <!-- 3. 24-Hour Average Analytics -->
       <div class="kpi-card">
         <div class="kpi-header">
-          <span class="kpi-label">2-Hr Average</span>
-          <span class="kpi-badge" id="stat-readings-count">24 points</span>
+          <span class="kpi-label">24-Hr Average</span>
+          <span class="kpi-badge" id="stat-readings-count">288 points</span>
         </div>
         <div class="kpi-value-row">
           <span class="kpi-val-big" id="stat-avg">--</span>
@@ -761,10 +1024,10 @@
         </div>
       </div>
 
-      <!-- 4. Active Treatments -->
+      <!-- 4. 24-Hour Insulin & Treatments -->
       <div class="kpi-card">
         <div class="kpi-header">
-          <span class="kpi-label">Active Treatments</span>
+          <span class="kpi-label">24-Hr Bolus & Doses</span>
           <span class="kpi-badge" id="stat-carbs">0g carbs</span>
         </div>
         <div class="kpi-value-row">
@@ -773,7 +1036,7 @@
         </div>
         <div class="kpi-subtext">
           <span id="stat-basal">Basal: -- U/h</span>
-          <span>Recent window</span>
+          <span id="stat-dose-count-kpi">24-hr window</span>
         </div>
       </div>
     </div>
@@ -784,50 +1047,187 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
-        <span>Ask AI Copilot About These Stats</span>
+        <span>Ask AI Copilot About These 24h Stats</span>
       </div>
       <div class="quick-ask-chips">
-        <button type="button" class="quick-chip" data-prompt="What is my current glucose and how does it compare to my target?">🩸 Analyze Current Glucose</button>
-        <button type="button" class="quick-chip" data-prompt="Show my complete glucose trends and trajectory over the past 2 hours.">📈 Deep Dive Trends</button>
-        <button type="button" class="quick-chip" data-prompt="Review my recent insulin doses, boluses, and treatments.">💉 Check Insulin & Treatments</button>
-        <button type="button" class="quick-chip" data-prompt="What are my target ranges and how should I adjust them?">⚙️ Review Target Range</button>
+        <button type="button" class="quick-chip" data-prompt="Analyze my 24-hour glucose graph, time in range, and glycemic stability.">📈 Analyze 24h Graph</button>
+        <button type="button" class="quick-chip" data-prompt="Review my 24-hour insulin doses, boluses, and total daily dose (TDD).">💉 Review 24h Insulin Doses</button>
+        <button type="button" class="quick-chip" data-prompt="What is my current glucose and how does it compare to my target range?">🩸 Current Glucose Check</button>
+        <button type="button" class="quick-chip" data-prompt="How did my carb intakes correspond with my insulin doses today?">🍽️ Meal & Carb Analysis</button>
       </div>
     </div>
 
-    <!-- Timeline Section -->
-    <div class="section-card">
-      <div class="section-title-row">
-        <span class="section-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
+    <!-- Tabs Navigation -->
+    <div class="dashboard-tabs">
+      <button type="button" class="dash-tab active" data-tab="tab-graph" id="tab-btn-graph">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+        </svg>
+        <span>24h Glucose Graph</span>
+      </button>
+      <button type="button" class="dash-tab" data-tab="tab-insulin" id="tab-btn-insulin">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m19 11-4-4"/><path d="m17 7-7 7"/><path d="m9 15 2 2"/><path d="m6 18 1.5 1.5"/><path d="M12 21a9 9 0 1 0-9-9c0 1.48.36 2.88 1 4.12"/>
+        </svg>
+        <span>24h Insulin Doses</span>
+      </button>
+      <button type="button" class="dash-tab" data-tab="tab-timeline" id="tab-btn-timeline">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span>Readings & Log</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: 24h Glucose Graph -->
+    <div class="tab-pane active" id="tab-graph">
+      <div class="graph-card">
+        <div class="graph-header">
+          <span class="graph-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+            24-Hour Continuous Glucose Profile (<span id="graph-point-count">288</span> points)
+          </span>
+          <div class="graph-legend">
+            <div class="legend-item"><span class="legend-dot target"></span><span>Target (<span id="legend-target-range">70–180</span> mg/dL)</span></div>
+            <div class="legend-item"><span class="legend-dot high"></span><span>High (>180)</span></div>
+            <div class="legend-item"><span class="legend-dot low"></span><span>Low (<70)</span></div>
+          </div>
+        </div>
+
+        <div class="graph-container" id="graph-container">
+          <svg class="glucose-svg" id="glucose-svg" viewBox="0 0 840 280" preserveAspectRatio="none">
+            <!-- Dynamic SVG content generated by JS -->
           </svg>
-          CGM Reading History (Recent Timeline)
-        </span>
-        <span class="section-hint">5-min interval samples</span>
-      </div>
-      <div class="timeline-scroll" id="timeline-container">
-        <div class="timeline-node"><div class="timeline-time">Loading…</div></div>
+          <div class="graph-tooltip" id="graph-tooltip">
+            <div class="graph-tooltip-time" id="tip-time">--:-- UTC</div>
+            <div class="graph-tooltip-val" id="tip-val">-- mg/dL</div>
+            <div class="graph-tooltip-status" id="tip-status">--</div>
+          </div>
+        </div>
+
+        <div class="graph-metrics-strip">
+          <div class="mini-stat-card">
+            <span class="mini-stat-label">24h Average</span>
+            <span class="mini-stat-val" id="graph-avg">-- mg/dL</span>
+            <span class="mini-stat-sub">Overall glycemic mean</span>
+          </div>
+          <div class="mini-stat-card">
+            <span class="mini-stat-label">Time in Range</span>
+            <span class="mini-stat-val" id="graph-tir">--%</span>
+            <span class="mini-stat-sub" id="graph-tir-sub">Standard 70–180 mg/dL</span>
+          </div>
+          <div class="mini-stat-card">
+            <span class="mini-stat-label">Observed Extremes</span>
+            <span class="mini-stat-val" id="graph-extremes">-- – --</span>
+            <span class="mini-stat-sub">Min – Max in 24h</span>
+          </div>
+          <div class="mini-stat-card">
+            <span class="mini-stat-label">Estimated GMI</span>
+            <span class="mini-stat-val" id="graph-gmi">--%</span>
+            <span class="mini-stat-sub">Glucose Management Index</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Treatments Log Section -->
-    <div class="section-card">
-      <div class="section-title-row">
-        <span class="section-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m19 11-4-4"></path>
-            <path d="m17 7-7 7"></path>
-            <path d="m9 15 2 2"></path>
-            <path d="m6 18 1.5 1.5"></path>
-            <path d="M12 21a9 9 0 1 0-9-9c0 1.48.36 2.88 1 4.12"></path>
-          </svg>
-          Recent Treatment & Insulin Deliveries
-        </span>
-        <span class="section-hint">Pump logs</span>
+    <!-- TAB 2: 24h Insulin Doses -->
+    <div class="tab-pane" id="tab-insulin">
+      <div class="insulin-summary-grid">
+        <div class="insulin-card">
+          <span class="insulin-card-label">Total Bolus (24h)</span>
+          <span class="insulin-card-val" id="ins-total-bolus">-- U</span>
+          <span class="insulin-card-sub" id="ins-dose-count">-- bolus events</span>
+        </div>
+        <div class="insulin-card">
+          <span class="insulin-card-label">Total Carbs (24h)</span>
+          <span class="insulin-card-val" id="ins-total-carbs">-- g</span>
+          <span class="insulin-card-sub">Meal intakes logged</span>
+        </div>
+        <div class="insulin-card">
+          <span class="insulin-card-label">Active Basal Rate</span>
+          <span class="insulin-card-val" id="ins-basal-rate">-- U/h</span>
+          <span class="insulin-card-sub" id="ins-est-basal">Est 24h: -- U</span>
+        </div>
+        <div class="insulin-card">
+          <span class="insulin-card-label">Total Daily Dose (TDD)</span>
+          <span class="insulin-card-val" id="ins-tdd">-- U</span>
+          <span class="insulin-card-sub">Bolus + Basal estimate</span>
+        </div>
       </div>
-      <div class="treatments-grid" id="treatments-container">
-        <div class="treatment-item"><span class="treatment-type">Loading treatments…</span></div>
+
+      <!-- 24h Dose Table -->
+      <div class="doses-table-card">
+        <div class="section-title-row">
+          <span class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m19 11-4-4"/><path d="m17 7-7 7"/><path d="m9 15 2 2"/><path d="m6 18 1.5 1.5"/><path d="M12 21a9 9 0 1 0-9-9c0 1.48.36 2.88 1 4.12"/>
+            </svg>
+            24-Hour Insulin Doses & Meal Log
+          </span>
+          <span class="section-hint">Chronological pump events</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="doses-table">
+            <thead>
+              <tr>
+                <th>Time (UTC)</th>
+                <th>Type</th>
+                <th>Insulin Delivered</th>
+                <th>Carbs</th>
+                <th>Notes / Pump Context</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="doses-table-body">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Loading 24-hour doses…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Readings & Log -->
+    <div class="tab-pane" id="tab-timeline">
+      <!-- Timeline Section -->
+      <div class="section-card">
+        <div class="section-title-row">
+          <span class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            CGM Reading History (Recent Timeline)
+          </span>
+          <span class="section-hint">5-min interval samples</span>
+        </div>
+        <div class="timeline-scroll" id="timeline-container">
+          <div class="timeline-node"><div class="timeline-time">Loading…</div></div>
+        </div>
+      </div>
+
+      <!-- Treatments Log Section -->
+      <div class="section-card">
+        <div class="section-title-row">
+          <span class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m19 11-4-4"></path>
+              <path d="m17 7-7 7"></path>
+              <path d="m9 15 2 2"></path>
+              <path d="m6 18 1.5 1.5"></path>
+              <path d="M12 21a9 9 0 1 0-9-9c0 1.48.36 2.88 1 4.12"></path>
+            </svg>
+            Recent Treatment & Insulin Deliveries
+          </span>
+          <span class="section-hint">Pump logs</span>
+        </div>
+        <div class="treatments-grid" id="treatments-container">
+          <div class="treatment-item"><span class="treatment-type">Loading treatments…</span></div>
+        </div>
       </div>
     </div>
 
@@ -887,6 +1287,243 @@
 
 <script>
 /* ----------------------------------------------------------------------------
+ * Dashboard Tab Navigation
+ * -------------------------------------------------------------------------- */
+document.querySelectorAll(".dash-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".dash-tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+    tab.classList.add("active");
+    const targetId = tab.dataset.tab;
+    const targetPane = document.getElementById(targetId);
+    if (targetPane) targetPane.classList.add("active");
+  });
+});
+
+/* ----------------------------------------------------------------------------
+ * 24-Hour Glucose SVG Graph Renderer
+ * -------------------------------------------------------------------------- */
+function renderGlucoseGraph(points, targetLow, targetHigh) {
+  const svg = document.getElementById("glucose-svg");
+  if (!svg || !points || !points.length) return;
+
+  const w = 840;
+  const h = 280;
+  const padLeft = 55;
+  const padRight = 25;
+  const padTop = 25;
+  const padBottom = 35;
+  const plotW = w - padLeft - padRight;
+  const plotH = h - padTop - padBottom;
+
+  let minSgv = 40;
+  let maxSgv = 260;
+  points.forEach(p => {
+    if (p.sgv < minSgv) minSgv = Math.max(30, p.sgv - 10);
+    if (p.sgv > maxSgv) maxSgv = p.sgv + 20;
+  });
+
+  const yScale = val => padTop + plotH - ((val - minSgv) / (maxSgv - minSgv)) * plotH;
+  const xScale = idx => padLeft + (idx / (points.length - 1)) * plotW;
+
+  const yTargetHigh = yScale(targetHigh);
+  const yTargetLow = yScale(targetLow);
+
+  let gridLines = [
+    { val: 40, label: "40", dashed: false },
+    { val: targetLow, label: `${targetLow} Low`, dashed: true, color: "#ef4444" },
+    { val: 120, label: "120", dashed: false },
+    { val: targetHigh, label: `${targetHigh} High`, dashed: true, color: "#f59e0b" },
+    { val: 240, label: "240", dashed: false },
+  ];
+  if (maxSgv > 260) {
+    gridLines.push({ val: 300, label: "300", dashed: false });
+  }
+
+  let svgHtml = `
+    <defs>
+      <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0d9488" stop-opacity="0.28" />
+        <stop offset="85%" stop-color="#0d9488" stop-opacity="0.04" />
+        <stop offset="100%" stop-color="#0d9488" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#14b8a6" />
+        <stop offset="50%" stop-color="#0d9488" />
+        <stop offset="100%" stop-color="#0f766e" />
+      </linearGradient>
+    </defs>
+
+    <!-- Target Range Shaded Band (${targetLow} - ${targetHigh} mg/dL) -->
+    <rect x="${padLeft}" y="${yTargetHigh}" width="${plotW}" height="${yTargetLow - yTargetHigh}" fill="#10b981" fill-opacity="0.08" rx="2" />
+  `;
+
+  // Draw Horizontal Grid Lines & Labels
+  gridLines.forEach(g => {
+    if (g.val >= minSgv && g.val <= maxSgv) {
+      const y = yScale(g.val);
+      const strokeStyle = g.dashed ? `stroke="${g.color || '#cbd5e1'}" stroke-width="1.2" stroke-dasharray="4,4"` : `stroke="#e2e8f0" stroke-width="1"`;
+      svgHtml += `
+        <line x1="${padLeft}" y1="${y}" x2="${padLeft + plotW}" y2="${y}" ${strokeStyle} />
+        <text x="${padLeft - 8}" y="${y + 4}" font-size="10" font-weight="600" fill="${g.dashed ? (g.color || '#64748b') : '#94a3b8'}" text-anchor="end" font-family="system-ui">${g.label}</text>
+      `;
+    }
+  });
+
+  // Build Area Path and Line Path
+  let pathD = "";
+  let areaD = "";
+  points.forEach((p, idx) => {
+    const x = xScale(idx);
+    const y = yScale(p.sgv);
+    if (idx === 0) {
+      pathD += `M ${x.toFixed(1)} ${y.toFixed(1)}`;
+      areaD += `M ${x.toFixed(1)} ${(padTop + plotH).toFixed(1)} L ${x.toFixed(1)} ${y.toFixed(1)}`;
+    } else {
+      pathD += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
+      areaD += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
+    }
+  });
+  const lastX = xScale(points.length - 1);
+  areaD += ` L ${lastX.toFixed(1)} ${(padTop + plotH).toFixed(1)} Z`;
+
+  svgHtml += `
+    <!-- Shaded Area Under Line -->
+    <path d="${areaD}" fill="url(#areaGradient)" />
+
+    <!-- Glucose Trend Polyline -->
+    <path d="${pathD}" fill="none" stroke="url(#lineGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  `;
+
+  // X Axis Time Labels (every ~36 points = ~3 hours)
+  const step = Math.max(1, Math.floor(points.length / 7));
+  for (let i = 0; i < points.length; i += step) {
+    const pt = points[i];
+    const x = xScale(i);
+    svgHtml += `
+      <line x1="${x}" y1="${padTop + plotH}" x2="${x}" y2="${padTop + plotH + 5}" stroke="#cbd5e1" stroke-width="1" />
+      <text x="${x}" y="${padTop + plotH + 18}" font-size="10.5" font-weight="500" fill="#64748b" text-anchor="middle" font-family="system-ui">${pt.time}</text>
+    `;
+  }
+
+  // Crosshair vertical line and hover circle (initially hidden)
+  svgHtml += `
+    <line id="crosshair-line" x1="0" y1="${padTop}" x2="0" y2="${padTop + plotH}" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="3,3" style="display:none;" />
+    <circle id="hover-circle" cx="0" cy="0" r="5" fill="#0d9488" stroke="#ffffff" stroke-width="2.5" style="display:none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));" />
+  `;
+
+  svg.innerHTML = svgHtml;
+
+  // Add Hover & Touch Event Listeners for Interactive Tooltip
+  const tooltip = document.getElementById("graph-tooltip");
+  const tipTime = document.getElementById("tip-time");
+  const tipVal = document.getElementById("tip-val");
+  const tipStatus = document.getElementById("tip-status");
+
+  function onPointerMove(e) {
+    const rect = svg.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const normX = (mouseX / rect.width) * w;
+    if (normX < padLeft || normX > padLeft + plotW) {
+      hideTooltip();
+      return;
+    }
+    const idx = Math.min(points.length - 1, Math.max(0, Math.round(((normX - padLeft) / plotW) * (points.length - 1))));
+    const pt = points[idx];
+    const ptX = xScale(idx);
+    const ptY = yScale(pt.sgv);
+
+    const crosshair = document.getElementById("crosshair-line");
+    const circle = document.getElementById("hover-circle");
+    if (crosshair && circle) {
+      crosshair.setAttribute("x1", ptX);
+      crosshair.setAttribute("x2", ptX);
+      crosshair.style.display = "block";
+      circle.setAttribute("cx", ptX);
+      circle.setAttribute("cy", ptY);
+      circle.style.display = "block";
+    }
+
+    const leftPx = (ptX / w) * rect.width;
+    const topPx = (ptY / h) * rect.height;
+    tooltip.style.left = `${leftPx}px`;
+    tooltip.style.top = `${topPx}px`;
+    tooltip.style.display = "block";
+
+    tipTime.textContent = `${pt.time} UTC`;
+    tipVal.innerHTML = `${pt.sgv} <span style="font-size:.78rem; font-weight:normal;">mg/dL ${pt.arrow || ''}</span>`;
+
+    let statText = "In Target Range";
+    let statColor = "#34d399";
+    if (pt.sgv > targetHigh) {
+      statText = `+${pt.sgv - targetHigh} mg/dL Above Target`;
+      statColor = "#fbbf24";
+    } else if (pt.sgv < targetLow) {
+      statText = `${targetLow - pt.sgv} mg/dL Below Target`;
+      statColor = "#f87171";
+    }
+    tipStatus.textContent = statText;
+    tipStatus.style.color = statColor;
+  }
+
+  function hideTooltip() {
+    tooltip.style.display = "none";
+    const crosshair = document.getElementById("crosshair-line");
+    const circle = document.getElementById("hover-circle");
+    if (crosshair) crosshair.style.display = "none";
+    if (circle) circle.style.display = "none";
+  }
+
+  svg.onmousemove = onPointerMove;
+  svg.onmouseleave = hideTooltip;
+  svg.ontouchmove = e => { if (e.touches && e.touches.length) onPointerMove(e.touches[0]); };
+  svg.ontouchend = hideTooltip;
+}
+
+/* ----------------------------------------------------------------------------
+ * 24-Hour Insulin Doses Tab Renderer
+ * -------------------------------------------------------------------------- */
+function renderInsulinTab(treatments24h) {
+  if (!treatments24h) return;
+  document.getElementById("ins-total-bolus").textContent = `${treatments24h.total_bolus || 0} U`;
+  document.getElementById("ins-dose-count").textContent = `${treatments24h.dose_count || 0} bolus deliveries`;
+  document.getElementById("ins-total-carbs").textContent = `${treatments24h.total_carbs || 0} g`;
+  document.getElementById("ins-basal-rate").textContent = `${(treatments24h.basal_rate || 0).toFixed(2)} U/h`;
+  document.getElementById("ins-est-basal").textContent = `Est 24h: ${(treatments24h.est_basal_24h || 0).toFixed(1)} U`;
+  document.getElementById("ins-tdd").textContent = `${(treatments24h.tdd || 0).toFixed(1)} U`;
+
+  const tbody = document.getElementById("doses-table-body");
+  if (!tbody) return;
+
+  if (treatments24h.doses && treatments24h.doses.length) {
+    tbody.innerHTML = "";
+    treatments24h.doses.forEach(d => {
+      const tr = document.createElement("tr");
+      const insPill = d.insulin > 0 ? `<span class="dose-pill">${d.insulin.toFixed(2)} U</span>` : `<span style="color:var(--text-light)">--</span>`;
+      const carbPill = d.carbs > 0 ? `<span class="dose-carb-pill">${d.carbs}g carbs</span>` : `<span style="color:var(--text-light)">--</span>`;
+      const notes = d.notes ? `<em>${d.notes}</em>` : `<span style="color:var(--text-light)">--</span>`;
+      tr.innerHTML = `
+        <td><strong>${d.time}</strong> <span style="font-size:.72rem; color:var(--text-muted)">UTC</span></td>
+        <td><span style="font-weight:600; color:var(--text-main)">${d.type}</span></td>
+        <td>${insPill}</td>
+        <td>${carbPill}</td>
+        <td>${notes}</td>
+        <td>
+          <button type="button" class="ask-dose-btn quick-chip" data-prompt="Analyze this ${d.insulin > 0 ? d.insulin + 'U ' : ''}${d.carbs > 0 ? d.carbs + 'g carbs ' : ''}${d.type} at ${d.time} UTC.">Ask Copilot</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } else {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No insulin boluses or treatments recorded in this 24-hour period.</td>
+      </tr>
+    `;
+  }
+}
+
+/* ----------------------------------------------------------------------------
  * Dashboard Live Stats Fetcher
  * -------------------------------------------------------------------------- */
 const refreshBtn = document.getElementById("refresh-stats-btn");
@@ -922,8 +1559,10 @@ async function loadStats() {
 
       // Analytics / TIR
       if (data.analytics) {
+        const tLow = data.analytics.target_low || 70;
+        const tHigh = data.analytics.target_high || 180;
         document.getElementById("stat-tir").textContent = `${data.analytics.tir_pct}%`;
-        document.getElementById("stat-tir-target").textContent = `${data.analytics.target_low}–${data.analytics.target_high} mg/dL`;
+        document.getElementById("stat-tir-target").textContent = `${tLow}–${tHigh} mg/dL`;
         document.getElementById("tir-bar").style.width = `${data.analytics.tir_pct}%`;
         document.getElementById("tir-bar-above").style.width = `${data.analytics.above_pct}%`;
         document.getElementById("stat-tir-high").textContent = `${data.analytics.above_pct}% High`;
@@ -932,16 +1571,41 @@ async function loadStats() {
         document.getElementById("stat-avg").textContent = data.analytics.avg;
         document.getElementById("stat-readings-count").textContent = `${data.analytics.readings_count} points`;
         document.getElementById("stat-range").textContent = `Range: ${data.analytics.min} – ${data.analytics.max} mg/dL`;
+
+        // 24h Graph Mini Stats
+        document.getElementById("graph-point-count").textContent = data.analytics.readings_count;
+        document.getElementById("legend-target-range").textContent = `${tLow}–${tHigh}`;
+        document.getElementById("graph-avg").textContent = `${data.analytics.avg} mg/dL`;
+        document.getElementById("graph-tir").textContent = `${data.analytics.tir_pct}%`;
+        document.getElementById("graph-tir-sub").textContent = `${data.analytics.above_pct}% High • ${data.analytics.below_pct}% Low`;
+        document.getElementById("graph-extremes").textContent = `${data.analytics.min} – ${data.analytics.max} mg/dL`;
+        
+        // ADA GMI Formula: 3.31 + (0.02392 * mean_glucose)
+        if (typeof data.analytics.avg === "number" && data.analytics.avg > 0) {
+          const gmiVal = (3.31 + (0.02392 * data.analytics.avg)).toFixed(1);
+          document.getElementById("graph-gmi").textContent = `${gmiVal}%`;
+        }
       }
 
-      // Treatments
-      if (data.treatments) {
-        document.getElementById("stat-bolus").textContent = data.treatments.total_bolus;
-        document.getElementById("stat-basal").textContent = `Basal: ${data.treatments.basal_rate.toFixed(2)} U/h`;
-        document.getElementById("stat-carbs").textContent = `${data.treatments.total_carbs}g carbs`;
+      // Treatments / KPI
+      if (data.treatments_24h) {
+        document.getElementById("stat-bolus").textContent = data.treatments_24h.total_bolus;
+        document.getElementById("stat-basal").textContent = `Basal: ${data.treatments_24h.basal_rate.toFixed(2)} U/h`;
+        document.getElementById("stat-carbs").textContent = `${data.treatments_24h.total_carbs}g carbs`;
+        document.getElementById("stat-dose-count-kpi").textContent = `${data.treatments_24h.dose_count || 0} doses (24h)`;
       }
 
-      // Timeline nodes
+      // Render 24h Glucose SVG Graph
+      if (data.graph_24h && data.graph_24h.length) {
+        renderGlucoseGraph(data.graph_24h, data.analytics?.target_low || 70, data.analytics?.target_high || 180);
+      }
+
+      // Render 24h Insulin Tab
+      if (data.treatments_24h) {
+        renderInsulinTab(data.treatments_24h);
+      }
+
+      // Timeline nodes (Tab 3)
       const timelineBox = document.getElementById("timeline-container");
       if (data.timeline && data.timeline.length) {
         timelineBox.innerHTML = "";
@@ -956,7 +1620,7 @@ async function loadStats() {
         });
       }
 
-      // Treatments list
+      // Treatments list (Tab 3)
       const treatsBox = document.getElementById("treatments-container");
       if (data.recent_treatments && data.recent_treatments.length) {
         treatsBox.innerHTML = "";
